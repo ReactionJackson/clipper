@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
-import useMouse from "../hooks/useMouse"
 import useAnimation from "../hooks/useAnimation"
 import useListener from "../hooks/useListener"
-import useLogger from "../hooks/useLogger"
 
 const src = [
 	'https://images.unsplash.com/photo-1488741824574-82b39614583c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3450&q=80',

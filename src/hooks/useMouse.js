@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
 import useListener from "./useListener"
-import useLogger from "./useLogger"
 
 const useMouse = () => {
 
