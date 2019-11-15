@@ -7,8 +7,8 @@ const Clipper = () => {
 
 	let pos = { x: 0, y: 0 }
 	const [ drag, setDrag ] = useState(pos)
-	// const [ radius, setRadius ] = useState(100)
 	const [ path, setPath ] = useState("")
+	const [ bgToggle, setBgToggle ] = useState(true)
 	const { width, height } = useViewport()
 
 	useListener("mousemove", e => pos = { x: e.clientX, y: e.clientY })
@@ -28,7 +28,17 @@ const Clipper = () => {
 
 	useAnimation(() => {
 
-		a = a + 1 > 360 ? 0 : a + 1
+		if(a + 1 > 360) {
+
+			a = 0
+
+			setBgToggle(prev => !prev)
+
+		} else {
+
+			a++
+		}
+
 		endAngle = -90 + a
 		x1 = startPointX + radius * Math.cos(Math.PI * startAngle / 180)
 		y1 = startPointY + radius * Math.sin(Math.PI * startAngle / 180)
@@ -48,10 +58,10 @@ const Clipper = () => {
 
 		<svg viewBox={`0 0 ${ width } ${ height }`} width={ width } height={ height }>
 			<clipPath id="circle">
-				<path d={ path } fill="#c60f1d" transform={`translate(${ drag.x },${ drag.y })`} />
+				<path d={ path } transform={`translate(${ drag.x },${ drag.y })`} />
 			</clipPath>
-			<image xlinkHref={ require("../assets/img/1.png") } width={ width } height={ height } preserveAspectRatio="none" />
-			<image xlinkHref={ require("../assets/img/2.png") } width={ width } height={ height } preserveAspectRatio="none" clipPath="url(#circle)" />
+			<image xlinkHref={ require(`../assets/img/${ bgToggle ? 1 : 2 }.png`) } width={ width } height={ height } preserveAspectRatio="none" />
+			<image xlinkHref={ require(`../assets/img/${ bgToggle ? 2 : 1 }.png`) } width={ width } height={ height } preserveAspectRatio="none" clipPath="url(#circle)" />
 		</svg>
 	)
 }
