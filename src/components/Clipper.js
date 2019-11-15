@@ -2,16 +2,51 @@ import React, { useState, useRef, useEffect } from "react"
 import useAnimation from "../hooks/useAnimation"
 import useListener from "../hooks/useListener"
 import useViewport from "../hooks/useViewport"
+import useMouse from "../hooks/useMouse"
 
 const Clipper = () => {
 
 	let pos = { x: 0, y: 0 }
 	const [ drag, setDrag ] = useState(pos)
 	const [ path, setPath ] = useState("")
+	const [ offset, setOffset ] = useState({ x: 0, y: 0 })
+	const mouse = useMouse()
 	const [ bgToggle, setBgToggle ] = useState(true)
 	const { width, height } = useViewport()
 
 	useListener("mousemove", e => pos = { x: e.clientX, y: e.clientY })
+
+	const parallaxRef = useRef()
+	const maxOffset = 20
+
+	useEffect(() => {
+
+		const calculateOffset = ({ x, y }, distance) => {
+
+			const origin = {
+				x: width / 2,
+				y: height / 2
+			}
+
+			const diff = {
+				x: x - origin.x,
+				y: y - origin.y
+			}
+
+			const pc = {
+				x: diff.x / origin.x,
+				y: diff.y / origin.y
+			}
+
+			return {
+				x: parseInt(distance * pc.x),
+				y: parseInt(distance * pc.y)
+			}
+		}
+
+		setOffset(calculateOffset(mouse, maxOffset))
+
+	}, [ mouse ])
 
 	let a = 0
 
@@ -56,12 +91,12 @@ const Clipper = () => {
 
 	return (
 
-		<svg viewBox={`0 0 ${ width } ${ height }`} width={ width } height={ height }>
+		<svg viewBox={`0 0 ${ width } ${ height }`} width={ width } height={ height } ref={ parallaxRef }>
 			<clipPath id="circle">
 				<path d={ path } transform={`translate(${ drag.x },${ drag.y })`} />
 			</clipPath>
-			<image xlinkHref={ require(`../assets/img/${ bgToggle ? 1 : 2 }.png`) } width={ width } height={ height } preserveAspectRatio="none" />
-			<image xlinkHref={ require(`../assets/img/${ bgToggle ? 2 : 1 }.png`) } width={ width } height={ height } preserveAspectRatio="none" clipPath="url(#circle)" />
+			<image x={ offset.x - (maxOffset) } y={ offset.y - (maxOffset) } xlinkHref={ require(`../assets/img/${ bgToggle ? 1 : 2 }.png`) } width={ width + (maxOffset * 2) } height={ height + (maxOffset * 2) } preserveAspectRatio="none" />
+			<image x={ offset.x - (maxOffset) } y={ offset.y - (maxOffset) } xlinkHref={ require(`../assets/img/${ bgToggle ? 2 : 1 }.png`) } width={ width + (maxOffset * 2) } height={ height + (maxOffset * 2) } preserveAspectRatio="none" clipPath="url(#circle)" />
 		</svg>
 	)
 }
