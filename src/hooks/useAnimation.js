@@ -1,18 +1,20 @@
-import { useEffect } from "react"
+import { useRef, useEffect } from "react"
 
 const useAnimation = updates => {
+
+  const frameRef = useRef()
 
   const animate = () => {
 
     updates()
-    requestAnimationFrame(animate)
+    frameRef.current = requestAnimationFrame(animate)
   }
 
   useEffect(() => {
 
-    requestAnimationFrame(animate)
+    frameRef.current = requestAnimationFrame(animate)
 
-    return () => cancelAnimationFrame()
+    return () => cancelAnimationFrame(frameRef.current)
 
   }, [])
 }
